@@ -132,8 +132,10 @@ public class TestPageBasic extends TestBase {
 
   @Test
   void shouldFireLoadWhenExpected() {
+    Deferred<Response> navi = page.futureNavigation();
     page.navigate("about:blank");
     page.waitForLoadState(LOAD);
+    navi.get();
   }
 
   // TODO: not supported in sync api

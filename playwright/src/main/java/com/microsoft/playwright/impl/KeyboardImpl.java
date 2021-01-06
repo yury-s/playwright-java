@@ -19,7 +19,7 @@ package com.microsoft.playwright.impl;
 import com.google.gson.JsonObject;
 import com.microsoft.playwright.Keyboard;
 
-class KeyboardImpl implements Keyboard {
+class KeyboardImpl extends LoggingSupport implements Keyboard {
   private final ChannelOwner page;
 
   KeyboardImpl(ChannelOwner page) {
@@ -28,16 +28,20 @@ class KeyboardImpl implements Keyboard {
 
   @Override
   public void down(String key) {
-    JsonObject params = new JsonObject();
-    params.addProperty("key", key);
-    page.sendMessage("keyboardDown", params);
+    withLogging("Keyboard.down", () -> {
+      JsonObject params = new JsonObject();
+      params.addProperty("key", key);
+      page.sendMessage("keyboardDown", params);
+    });
   }
 
   @Override
   public void insertText(String text) {
-    JsonObject params = new JsonObject();
-    params.addProperty("text", text);
-    page.sendMessage("keyboardInsertText", params);
+    withLogging("Keyboard.insertText", () -> {
+      JsonObject params = new JsonObject();
+      params.addProperty("text", text);
+      page.sendMessage("keyboardInsertText", params);
+    });
   }
 
   @Override

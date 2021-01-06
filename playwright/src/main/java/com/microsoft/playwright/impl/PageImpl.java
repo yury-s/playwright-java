@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import static com.microsoft.playwright.impl.Serialization.gson;
@@ -441,6 +442,10 @@ public class PageImpl extends ChannelOwner implements Page {
 
   @Override
   public ResponseImpl navigate(String url, NavigateOptions options) {
+    return withLogging("Page.navigate", () -> navigateImpl(url, options));
+  }
+
+  ResponseImpl navigateImpl(String url, NavigateOptions options) {
     return mainFrame.navigate(url, convertViaJson(options, Frame.NavigateOptions.class));
   }
 
@@ -451,7 +456,8 @@ public class PageImpl extends ChannelOwner implements Page {
 
   @Override
   public String innerHTML(String selector, InnerHTMLOptions options) {
-    return mainFrame.innerHTML(selector, convertViaJson(options, Frame.InnerHTMLOptions.class));
+    return withLogging("Page.innerHTML",
+      () -> mainFrame.innerHTML(selector, convertViaJson(options, Frame.InnerHTMLOptions.class)));
   }
 
   @Override
@@ -770,6 +776,10 @@ public class PageImpl extends ChannelOwner implements Page {
 
   @Override
   public Deferred<Response> futureNavigation(FutureNavigationOptions options) {
+    return withLoggingDeferred("Page.futureNavigation", () -> mainFrame.page.futureNavigationImpl(options));
+  }
+
+  Deferred<Response> futureNavigationImpl(FutureNavigationOptions options) {
     Frame.FutureNavigationOptions frameOptions = new Frame.FutureNavigationOptions();
     if (options != null) {
       frameOptions.timeout = options.timeout;

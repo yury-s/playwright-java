@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-class ChannelOwner {
+class ChannelOwner extends LoggingSupport {
   final Connection connection;
   private final ChannelOwner parent;
   private final Map<String, ChannelOwner> objects = new HashMap<>();

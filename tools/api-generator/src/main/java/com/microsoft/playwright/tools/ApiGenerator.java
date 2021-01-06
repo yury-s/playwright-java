@@ -23,6 +23,8 @@ import com.google.gson.JsonObject;
 import java.io.*;
 import java.nio.file.FileSystems;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -546,6 +548,51 @@ class Method extends Element {
     }
     writeJavadoc(output, offset, String.join("\n", sections));
   }
+
+  void writeLoggingDelegateTo(List<String> output, String offset) {
+    if (customSignature.containsKey(jsonPath)) {
+      Pattern pattern = Pattern.compile("([\\w<>]+)\\ (\\w+)\\((.+)\\);");
+      String[] signatures = customSignature.get(jsonPath);
+      for (String signature : signatures) {
+        if (signature.startsWith("default")) {
+          continue;
+        }
+        Matcher matcher = pattern.matcher(signature);
+        if (matcher.matches()) {
+          output.add(offset + "@Override");
+          output.add(offset + "public " + signature.replace(";", " {"));
+          String[] args = matcher.group(3).split(",");
+          List<String> params = new ArrayList<>();
+          for (String arg : args) {
+            String[] typeName = arg.trim().split(" ");
+            params.add(typeName[1]);
+          }
+          String prefix = "void".equals(matcher.group(1)) ? "  " : "  return ";
+          output.add(offset + prefix + "impl." + matcher.group(2) + "(" + String.join(" ,", params) + ");");
+          output.add(offset + "}");
+        }
+      }
+      return;
+    }
+    StringBuilder argList = new StringBuilder();
+    for (Param p : params) {
+      if (argList.length() > 0)
+        argList.append(", ");
+      argList.append(p.toJava());
+    }
+    String signature = returnType.toJava() + " " + name + "(" + argList + ")";
+    output.add(offset + "@Override");
+    output.add(offset + "public " + signature + "{");
+    StringBuilder paramList = new StringBuilder();
+    for (Param p : params) {
+      if (paramList.length() > 0)
+        paramList.append(", ");
+      paramList.append(p.name());
+    }
+    String prefix = "void".equals(returnType.toJava()) ? "  " : "  return ";
+    output.add(offset + prefix + "impl." + name + "(" + paramList + ");");
+    output.add(offset + "}");
+  }
 }
 
 class Param extends Element {
@@ -773,9 +820,7 @@ class Interface extends TypeDefinition {
     " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n" +
     " * See the License for the specific language governing permissions and\n" +
     " * limitations under the License.\n" +
-    " */\n" +
-    "\n" +
-    "package com.microsoft.playwright;\n";
+    " */";
 
   private static Set<String> allowedBaseInterfaces = new HashSet<>(asList("Browser", "JSHandle", "BrowserContext"));
 
@@ -795,6 +840,10 @@ class Interface extends TypeDefinition {
 
   void writeTo(List<String> output, String offset) {
     output.add(header);
+    output.add("");
+    output.add("package com.microsoft.playwright;");
+    output.add("");
+
     if (jsonName.equals("Route")) {
       output.add("import java.nio.charset.StandardCharsets;");
     }
@@ -836,6 +885,47 @@ class Interface extends TypeDefinition {
     if ("Worker".equals(jsonName)) {
       output.add(offset + "Deferred<Event<EventType>> futureEvent(EventType event);");
     }
+    output.add("}");
+    output.add("\n");
+  }
+
+  void writeLoggingWrapperTo(List<String> output, String offset) {
+    output.add(header);
+    output.add("");
+    output.add("package com.microsoft.playwright.impl;");
+    output.add("");
+    output.add("import com.microsoft.playwright.*;");
+    output.add("");
+    if (jsonName.equals("Route")) {
+      output.add("import java.nio.charset.StandardCharsets;");
+    }
+    if ("Download".equals(jsonName)) {
+      output.add("import java.io.InputStream;");
+    }
+    if (asList("Page", "Frame", "ElementHandle", "FileChooser", "Browser", "BrowserContext", "BrowserType", "Download", "Route", "Selectors").contains(jsonName)) {
+      output.add("import java.nio.file.Path;");
+    }
+    output.add("import java.util.*;");
+    if (asList("Page", "BrowserContext").contains(jsonName)) {
+      output.add("import java.util.function.Consumer;");
+    }
+    if (asList("Page", "Frame", "BrowserContext", "WebSocket").contains(jsonName)) {
+      output.add("import java.util.function.Predicate;");
+    }
+    if (asList("Page", "Frame", "BrowserContext").contains(jsonName)) {
+      output.add("import java.util.regex.Pattern;");
+    }
+    output.add("");
+
+    output.add("class " + jsonName + "Logging extends LoggingSupport implements " + jsonName + " {");
+    offset = "  ";
+    output.add(offset + jsonName + "Impl impl;");
+    for (Method m : methods) {
+      m.writeLoggingDelegateTo(output, offset);
+    }
+//    if ("Worker".equals(jsonName)) {
+//      output.add(offset + "Deferred<Event<EventType>> futureEvent(EventType event);");
+//    }
     output.add("}");
     output.add("\n");
   }
@@ -1214,11 +1304,21 @@ public class ApiGenerator {
       if (skipList.contains(name)) {
         continue;
       }
-      List<String> lines = new ArrayList<>();
-      new Interface(entry.getValue().getAsJsonObject()).writeTo(lines, "");
-      String text = String.join("\n", lines);
-      try (FileWriter writer = new FileWriter(new File(dir, name + ".java"))) {
-        writer.write(text);
+      {
+        List<String> lines = new ArrayList<>();
+        new Interface(entry.getValue().getAsJsonObject()).writeTo(lines, "");
+        String text = String.join("\n", lines);
+        try (FileWriter writer = new FileWriter(new File(dir, name + ".java"))) {
+          writer.write(text);
+        }
+      }
+      {
+        List<String> lines = new ArrayList<>();
+        new Interface(entry.getValue().getAsJsonObject()).writeLoggingWrapperTo(lines, "");
+        String text = String.join("\n", lines);
+        try (FileWriter writer = new FileWriter(new File(new File(dir, "impl"), name + "Logging.java"))) {
+          writer.write(text);
+        }
       }
     }
   }
