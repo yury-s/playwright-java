@@ -68,10 +68,8 @@ abstract class Element {
     output.add(offset + "/**");
     String[] lines = text.split("\\n");
     for (String line : lines) {
-      output.add((offset + " *" + (line.isEmpty() ? "" : " ") + line)
-        .replace("*/", "*\\/")
-        .replace("**NOTE**", "<strong>NOTE</strong>")
-        .replaceAll("`([^`]+)`", "{@code $1}"));
+      line = line.replace("*/", "*\\/");
+      output.add(offset + " *" + (line.isEmpty() ? "" : " ") + line);
     }
     output.add(offset + " */");
   }
@@ -80,16 +78,18 @@ abstract class Element {
     return comment()
       // Remove any code snippets between ``` and ```.
       .replaceAll("\\n```((?<!`)`(?!`)|[^`])+```\\n", "")
+      .replaceAll("`([^`]+)`", "{@code $1}")
+      .replaceAll("\\*\\*([^*]+)\\*\\*", "<strong>$1</strong>")
       .replaceAll("\\nAn example of[^\\n]+\\n", "")
       .replaceAll("\\nThis example [^\\n]+\\n", "")
       .replaceAll("\\nExamples:\\n", "")
       .replaceAll("\\nSee ChromiumBrowser[^\\n]+", "\n")
       // > **NOTE** ... => **NOTE** ...
-      .replaceAll("^>", "")
+      .replaceAll("\\n> ", "\n")
       .replaceAll("\\n\\n", "\n\n<p> ");
   }
 
-  String comment() {
+  private String comment() {
     JsonObject json = jsonElement.getAsJsonObject();
     if (!json.has("comment")) {
       return "";
@@ -627,7 +627,7 @@ class Method extends Element {
     boolean hasBlankLine = false;
     if (!params.isEmpty()) {
       for (Param p : params) {
-        String comment = p.comment();
+        String comment = p.formattedComment();
         if (comment.isEmpty()) {
           continue;
         }
@@ -695,7 +695,7 @@ class Field extends Element {
   }
 
   void writeTo(List<String> output, String offset, String access) {
-    writeJavadoc(output, offset, comment());
+    writeJavadoc(output, offset, formattedComment());
     if (asList("Frame.waitForNavigation.options.url",
                "Page.waitForNavigation.options.url").contains(jsonPath)) {
       output.add(offset + "public String glob;");

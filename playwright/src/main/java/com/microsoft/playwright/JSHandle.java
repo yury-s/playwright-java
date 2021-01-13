@@ -75,7 +75,7 @@ public interface JSHandle {
    */
   JSHandle evaluateHandle(String pageFunction, Object arg);
   /**
-   * The method returns a map with **own property names** as keys and JSHandle instances for the property values.
+   * The method returns a map with <strong>own property names</strong> as keys and JSHandle instances for the property values.
    */
   Map<String, JSHandle> getProperties();
   /**
@@ -85,9 +85,9 @@ public interface JSHandle {
    */
   JSHandle getProperty(String propertyName);
   /**
-   * Returns a JSON representation of the object. If the object has a {@code toJSON} function, it **will not be called**.
+   * Returns a JSON representation of the object. If the object has a {@code toJSON} function, it <strong>will not be called</strong>.
    *
-   * <p> > <strong>NOTE</strong> The method will return an empty JSON object if the referenced object is not stringifiable. It will throw an
+   * <p> <strong>NOTE</strong> The method will return an empty JSON object if the referenced object is not stringifiable. It will throw an
    * error if the object has circular references.
    */
   Object jsonValue();

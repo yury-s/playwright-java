@@ -726,7 +726,7 @@ public interface ElementHandle extends JSHandle {
    * <p> When all steps combined have not finished during the specified {@code timeout}, this method rejects with a {@code TimeoutError}.
    * Passing zero timeout disables this.
    *
-   * <p> > <strong>NOTE</strong> {@code elementHandle.dblclick()} dispatches two {@code click} events and a single {@code dblclick} event.
+   * <p> <strong>NOTE</strong> {@code elementHandle.dblclick()} dispatches two {@code click} events and a single {@code dblclick} event.
    */
   void dblclick(DblclickOptions options);
   default void dispatchEvent(String type) {
@@ -847,9 +847,9 @@ public interface ElementHandle extends JSHandle {
   /**
    * This method waits for [actionability](./actionability.md) checks, then tries to scroll element into view, unless it is
    * completely visible as defined by
-   * [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)'s ``{@code ratio}``.
+   * [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)'s ``{@code ratio}`{@code .
    *
-   * <p> Throws when {@code elementHandle} does not point to an element
+   * <p> Throws when }elementHandle` does not point to an element
    * [connected](https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected) to a Document or a ShadowRoot.
    */
   void scrollIntoViewIfNeeded(ScrollIntoViewIfNeededOptions options);
@@ -941,7 +941,7 @@ public interface ElementHandle extends JSHandle {
    * <p> When all steps combined have not finished during the specified {@code timeout}, this method rejects with a {@code TimeoutError}.
    * Passing zero timeout disables this.
    *
-   * <p> > <strong>NOTE</strong> {@code elementHandle.tap()} requires that the {@code hasTouch} option of the browser context be set to true.
+   * <p> <strong>NOTE</strong> {@code elementHandle.tap()} requires that the {@code hasTouch} option of the browser context be set to true.
    */
   void tap(TapOptions options);
   /**
@@ -1012,7 +1012,7 @@ public interface ElementHandle extends JSHandle {
    * will return immediately. If the selector doesn't satisfy the condition for the {@code timeout} milliseconds, the function will
    * throw.
    *
-   * <p> > <strong>NOTE</strong> This method does not work across navigations, use [{@code method: Page.waitForSelector}] instead.
+   * <p> <strong>NOTE</strong> This method does not work across navigations, use [{@code method: Page.waitForSelector}] instead.
    *
    * @param selector A selector to query for. See [working with selectors](./selectors.md#working-with-selectors) for more details.
    */

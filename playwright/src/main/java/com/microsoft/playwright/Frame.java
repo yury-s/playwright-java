@@ -906,7 +906,7 @@ public interface Frame {
    * <p> When all steps combined have not finished during the specified {@code timeout}, this method rejects with a {@code TimeoutError}.
    * Passing zero timeout disables this.
    *
-   * <p> > <strong>NOTE</strong> {@code frame.dblclick()} dispatches two {@code click} events and a single {@code dblclick} event.
+   * <p> <strong>NOTE</strong> {@code frame.dblclick()} dispatches two {@code click} events and a single {@code dblclick} event.
    *
    * @param selector A selector to search for element. If there are multiple elements satisfying the selector, the first will be used. See
    * [working with selectors](./selectors.md#working-with-selectors) for more details.
@@ -1052,9 +1052,9 @@ public interface Frame {
    * "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling
    * [{@code method: Response.status}].
    *
-   * <p> > <strong>NOTE</strong> {@code frame.goto} either throws an error or returns a main resource response. The only exceptions are navigation
+   * <p> <strong>NOTE</strong> {@code frame.goto} either throws an error or returns a main resource response. The only exceptions are navigation
    * to {@code about:blank} or navigation to the same URL with a different hash, which would succeed and return {@code null}.
-   * > <strong>NOTE</strong> Headless mode doesn't support navigation to a PDF document. See the
+   * <strong>NOTE</strong> Headless mode doesn't support navigation to a PDF document. See the
    * [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
    *
    * @param url URL to navigate frame to. The url should include scheme, e.g. {@code https://}.
@@ -1108,7 +1108,7 @@ public interface Frame {
    *
    * <p> If the name is empty, returns the id attribute instead.
    *
-   * <p> > <strong>NOTE</strong> This value is calculated once when the frame is created, and will not update if the attribute is changed
+   * <p> <strong>NOTE</strong> This value is calculated once when the frame is created, and will not update if the attribute is changed
    * later.
    */
   String name();
@@ -1239,7 +1239,7 @@ public interface Frame {
    * <p> When all steps combined have not finished during the specified {@code timeout}, this method rejects with a {@code TimeoutError}.
    * Passing zero timeout disables this.
    *
-   * <p> > <strong>NOTE</strong> {@code frame.tap()} requires that the {@code hasTouch} option of the browser context be set to true.
+   * <p> <strong>NOTE</strong> {@code frame.tap()} requires that the {@code hasTouch} option of the browser context be set to true.
    *
    * @param selector A selector to search for element. If there are multiple elements satisfying the selector, the first will be used. See
    * [working with selectors](./selectors.md#working-with-selectors) for more details.

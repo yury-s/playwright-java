@@ -1325,7 +1325,7 @@ public interface Page {
    * <p> The script is evaluated after the document was created but before any of its scripts were run. This is useful to amend
    * the JavaScript environment, e.g. to seed {@code Math.random}.
    *
-   * <p> > <strong>NOTE</strong> The order of evaluation of multiple scripts installed via [{@code method: BrowserContext.addInitScript}] and
+   * <p> <strong>NOTE</strong> The order of evaluation of multiple scripts installed via [{@code method: BrowserContext.addInitScript}] and
    * [{@code method: Page.addInitScript}] is not defined.
    *
    * @param script Script to be evaluated in the page.
@@ -1400,12 +1400,12 @@ public interface Page {
   }
   /**
    * If {@code runBeforeUnload} is {@code false}, does not run any unload handlers and waits for the page to be closed. If
-   * {@code runBeforeUnload} is {@code true} the method will run unload handlers, but will **not** wait for the page to close.
+   * {@code runBeforeUnload} is {@code true} the method will run unload handlers, but will <strong>not</strong> wait for the page to close.
    *
-   * <p> By default, {@code page.close()} **does not** run {@code beforeunload} handlers.
+   * <p> By default, {@code page.close()} <strong>does not</strong> run {@code beforeunload} handlers.
    *
-   * <p> > <strong>NOTE</strong> if {@code runBeforeUnload} is passed as true, a {@code beforeunload} dialog might be summoned
-   * > and should be handled manually via [{@code event: Page.dialog}] event.
+   * <p> <strong>NOTE</strong> if {@code runBeforeUnload} is passed as true, a {@code beforeunload} dialog might be summoned
+   * and should be handled manually via [{@code event: Page.dialog}] event.
    */
   void close(CloseOptions options);
   /**
@@ -1432,7 +1432,7 @@ public interface Page {
    * <p> When all steps combined have not finished during the specified {@code timeout}, this method rejects with a {@code TimeoutError}.
    * Passing zero timeout disables this.
    *
-   * <p> > <strong>NOTE</strong> {@code page.dblclick()} dispatches two {@code click} events and a single {@code dblclick} event.
+   * <p> <strong>NOTE</strong> {@code page.dblclick()} dispatches two {@code click} events and a single {@code dblclick} event.
    *
    * <p> Shortcut for main frame's [{@code method: Frame.dblclick}].
    *
@@ -1527,12 +1527,12 @@ public interface Page {
    * executes {@code callback} and returns a [Promise] which resolves to the return value of {@code callback}. If the {@code callback} returns
    * a [Promise], it will be awaited.
    *
-   * <p> The first argument of the {@code callback} function contains information about the caller: `{ browserContext: BrowserContext,
-   * page: Page, frame: Frame }`.
+   * <p> The first argument of the {@code callback} function contains information about the caller: {@code { browserContext: BrowserContext,
+   * page: Page, frame: Frame }}.
    *
    * <p> See [{@code method: BrowserContext.exposeBinding}] for the context-wide version.
    *
-   * <p> > <strong>NOTE</strong> Functions installed via {@code page.exposeBinding} survive navigations.
+   * <p> <strong>NOTE</strong> Functions installed via {@code page.exposeBinding} survive navigations.
    *
    *
    * @param name Name of the function on the window object.
@@ -1547,7 +1547,7 @@ public interface Page {
    *
    * <p> See [{@code method: BrowserContext.exposeFunction}] for context-wide exposed function.
    *
-   * <p> > <strong>NOTE</strong> Functions installed via {@code page.exposeFunction} survive navigations.
+   * <p> <strong>NOTE</strong> Functions installed via {@code page.exposeFunction} survive navigations.
    *
    *
    * @param name Name of the function on the window object
@@ -1648,9 +1648,9 @@ public interface Page {
    * Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling
    * [{@code method: Response.status}].
    *
-   * <p> > <strong>NOTE</strong> {@code page.goto} either throws an error or returns a main resource response. The only exceptions are navigation to
+   * <p> <strong>NOTE</strong> {@code page.goto} either throws an error or returns a main resource response. The only exceptions are navigation to
    * {@code about:blank} or navigation to the same URL with a different hash, which would succeed and return {@code null}.
-   * > <strong>NOTE</strong> Headless mode doesn't support navigation to a PDF document. See the
+   * <strong>NOTE</strong> Headless mode doesn't support navigation to a PDF document. See the
    * [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
    *
    * <p> Shortcut for main frame's [{@code method: Frame.goto}]
@@ -1719,12 +1719,12 @@ public interface Page {
   /**
    * Returns the PDF buffer.
    *
-   * <p> > <strong>NOTE</strong> Generating a pdf is currently only supported in Chromium headless.
+   * <p> <strong>NOTE</strong> Generating a pdf is currently only supported in Chromium headless.
    *
    * <p> {@code page.pdf()} generates a pdf of the page with {@code print} css media. To generate a pdf with {@code screen} media, call
    * [{@code method: Page.emulateMedia}] before calling {@code page.pdf()}:
    *
-   * <p> > <strong>NOTE</strong> By default, {@code page.pdf()} generates a pdf with modified colors for printing. Use the
+   * <p> <strong>NOTE</strong> By default, {@code page.pdf()} generates a pdf with modified colors for printing. Use the
    * [{@code -webkit-print-color-adjust}](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust) property to
    * force rendering of exact colors.
    *
@@ -1754,9 +1754,9 @@ public interface Page {
    * - {@code A5}: 5.83in x 8.27in
    * - {@code A6}: 4.13in x 5.83in
    *
-   * <p> > <strong>NOTE</strong> {@code headerTemplate} and {@code footerTemplate} markup have the following limitations:
-   * > 1. Script tags inside templates are not evaluated.
-   * > 2. Page styles are not visible inside templates.
+   * <p> <strong>NOTE</strong> {@code headerTemplate} and {@code footerTemplate} markup have the following limitations:
+   * 1. Script tags inside templates are not evaluated.
+   * 2. Page styles are not visible inside templates.
    */
   byte[] pdf(PdfOptions options);
   default void press(String selector, String key) {
@@ -1803,14 +1803,14 @@ public interface Page {
    *
    * <p> Once routing is enabled, every request matching the url pattern will stall unless it's continued, fulfilled or aborted.
    *
-   * <p> > <strong>NOTE</strong> The handler will only be called for the first url if the response is a redirect.
+   * <p> <strong>NOTE</strong> The handler will only be called for the first url if the response is a redirect.
    *
    * <p> or the same snippet using a regex pattern instead:
    *
    * <p> Page routes take precedence over browser context routes (set up with [{@code method: BrowserContext.route}]) when request
    * matches both handlers.
    *
-   * <p> > <strong>NOTE</strong> Enabling routing disables http cache.
+   * <p> <strong>NOTE</strong> Enabling routing disables http cache.
    *
    * @param url A glob pattern, regex pattern or predicate receiving [URL] to match while routing.
    * @param handler handler function to route the request.
@@ -1822,7 +1822,7 @@ public interface Page {
   /**
    * Returns the buffer with the captured screenshot.
    *
-   * <p> > <strong>NOTE</strong> Screenshots take at least 1/6 second on Chromium OS X and Chromium Windows. See https://crbug.com/741689 for
+   * <p> <strong>NOTE</strong> Screenshots take at least 1/6 second on Chromium OS X and Chromium Windows. See https://crbug.com/741689 for
    * discussion.
    */
   byte[] screenshot(ScreenshotOptions options);
@@ -1897,7 +1897,7 @@ public interface Page {
    * - [{@code method: Page.setContent}]
    * - [{@code method: Page.waitForNavigation}]
    *
-   * <p> > <strong>NOTE</strong> [{@code method: Page.setDefaultNavigationTimeout}] takes priority over [{@code method: Page.setDefaultTimeout}],
+   * <p> <strong>NOTE</strong> [{@code method: Page.setDefaultNavigationTimeout}] takes priority over [{@code method: Page.setDefaultTimeout}],
    * [{@code method: BrowserContext.setDefaultTimeout}] and [{@code method: BrowserContext.setDefaultNavigationTimeout}].
    *
    * @param timeout Maximum navigation time in milliseconds
@@ -1906,7 +1906,7 @@ public interface Page {
   /**
    * This setting will change the default maximum time for all the methods accepting {@code timeout} option.
    *
-   * <p> > <strong>NOTE</strong> [{@code method: Page.setDefaultNavigationTimeout}] takes priority over [{@code method: Page.setDefaultTimeout}].
+   * <p> <strong>NOTE</strong> [{@code method: Page.setDefaultNavigationTimeout}] takes priority over [{@code method: Page.setDefaultTimeout}].
    *
    * @param timeout Maximum time in milliseconds
    */
@@ -1914,7 +1914,7 @@ public interface Page {
   /**
    * The extra HTTP headers will be sent with every request the page initiates.
    *
-   * <p> > <strong>NOTE</strong> page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
+   * <p> <strong>NOTE</strong> page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
    *
    * @param headers An object containing additional HTTP headers to be sent with every request. All header values must be strings.
    */
@@ -1960,7 +1960,7 @@ public interface Page {
    * <p> When all steps combined have not finished during the specified {@code timeout}, this method rejects with a {@code TimeoutError}.
    * Passing zero timeout disables this.
    *
-   * <p> > <strong>NOTE</strong> {@code page.tap()} requires that the {@code hasTouch} option of the browser context be set to true.
+   * <p> <strong>NOTE</strong> {@code page.tap()} requires that the {@code hasTouch} option of the browser context be set to true.
    *
    * <p> Shortcut for main frame's [{@code method: Frame.tap}].
    *
@@ -2163,7 +2163,7 @@ public interface Page {
    * This method returns all of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
    * associated with the page.
    *
-   * <p> > <strong>NOTE</strong> This does not contain ServiceWorkers
+   * <p> <strong>NOTE</strong> This does not contain ServiceWorkers
    */
   List<Worker> workers();
 }
