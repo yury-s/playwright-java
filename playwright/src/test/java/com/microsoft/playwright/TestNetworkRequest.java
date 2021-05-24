@@ -18,6 +18,7 @@ package com.microsoft.playwright;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIf;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class TestNetworkRequest extends TestBase {
   }
 
   @Test
-  @DisabledIf(value="com.microsoft.playwright.TestBase#isWebKit", disabledReason="fail")
+  @EnabledIf(value="com.microsoft.playwright.TestBase#isFirefox", disabledReason="Fails in WebKit and flaky in Chromium, see https://github.com/microsoft/playwright/issues/6690")
   void shouldGetTheSameHeadersAsTheServer() throws ExecutionException, InterruptedException {
     Future<Server.Request> serverRequest = server.futureRequest("/empty.html");
     server.setRoute("/empty.html", exchange -> {
