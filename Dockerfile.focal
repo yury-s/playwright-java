@@ -18,15 +18,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # registry.
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-RUN mkdir /ms-playwright && chmod -R 777 $PLAYWRIGHT_BROWSERS_PATH
-
 RUN mkdir /tmp/pw-java
 COPY . /tmp/pw-java
-RUN cd /tmp/pw-java && \
+
+# Browsers will be downloaded in `/ms-playwright`.
+# Note: make sure to set 777 to the registry so that any user can access
+# registry.
+RUN mkdir $PLAYWRIGHT_BROWSERS_PATH && \
+    cd /tmp/pw-java && \
     ./scripts/download_driver_for_all_platforms.sh && \
     mvn install -D skipTests --no-transfer-progress && \
     DEBIAN_FRONTEND=noninteractive mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI \
                      -D exec.args="install-deps" -f playwright/pom.xml --no-transfer-progress && \
     mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI \
                      -D exec.args="install" -f playwright/pom.xml --no-transfer-progress && \
-    rm -rf /tmp/pw-java
+    rm -rf /tmp/pw-java && \
+    chmod -R 777 $PLAYWRIGHT_BROWSERS_PATH
