@@ -88,6 +88,7 @@ public abstract class Driver {
 
   private static Driver createDriver() throws Exception {
     String pathFromProperty = System.getProperty("playwright.cli.dir");
+    pathFromProperty = "/home/yurys/playwright-java/driver-bundle/src/main/resources/driver/linux";
     if (pathFromProperty != null) {
       return new PreinstalledDriver(Paths.get(pathFromProperty));
     }

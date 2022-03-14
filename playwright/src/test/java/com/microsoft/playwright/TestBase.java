@@ -19,6 +19,7 @@ package com.microsoft.playwright;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import static com.microsoft.playwright.Utils.getBrowserNameFromEnv;
 import static com.microsoft.playwright.Utils.nextFreePort;
@@ -66,7 +67,10 @@ public class TestBase {
 
   static BrowserType.LaunchOptions createLaunchOptions() {
     BrowserType.LaunchOptions options;
-    options = new BrowserType.LaunchOptions();
+    options = new BrowserType.LaunchOptions()
+      .setExecutablePath(Paths.get("/tmp/repackaged-firefox/firefox/firefox"));
+//      .setExecutablePath(Paths.get("/home/yurys/.cache/ms-playwright/firefox-1317/firefox/firefox"));
+
     options.headless = !headful;
     options.channel = getBrowserChannelFromEnv();
     return options;

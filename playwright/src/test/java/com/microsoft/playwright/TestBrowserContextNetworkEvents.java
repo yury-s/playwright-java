@@ -27,6 +27,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestBrowserContextNetworkEvents extends TestBase {
   @Test
+  void BrowserContextEventsRequest2() {
+    System.out.println(server.EMPTY_PAGE);
+    page.waitForTimeout(1000000);
+  }
+  @Test
   void BrowserContextEventsRequest() {
     List<String> requests = new ArrayList<>();
     context.onRequest(request -> requests.add(request.url()));

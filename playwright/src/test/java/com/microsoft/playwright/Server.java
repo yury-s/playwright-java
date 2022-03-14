@@ -146,6 +146,7 @@ public class Server implements HttpHandler {
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
+    System.out.println("url: " + exchange.getRequestURI().toString());
     String path = exchange.getRequestURI().getPath();
 
     if (auths.containsKey(path)) {
@@ -202,6 +203,8 @@ public class Server implements HttpHandler {
       return;
     }
     exchange.getResponseHeaders().add("Content-Type", mimeType(new File(resourcePath)));
+    exchange.getResponseHeaders().add("Keep-Alive", "timeout=5");
+    exchange.getResponseHeaders().add("Connection", "keep-alive");
     ByteArrayOutputStream body = new ByteArrayOutputStream();
     OutputStream output = body;
     if (gzipRoutes.contains(path)) {
@@ -225,7 +228,16 @@ public class Server implements HttpHandler {
     if (contentLength > 0) {
       exchange.getResponseBody().write(body.toByteArray());
     }
-    exchange.getResponseBody().close();
+
+    System.out.println(exchange.getRequestHeaders().getFirst("Connection"));
+    if ("keep-alive".equals(exchange.getRequestHeaders().getFirst("Connection"))) {
+      exchange.getResponseBody().flush();
+      System.out.println("flushed: " + exchange.getRequestURI().toString());
+    } else {
+      exchange.getResponseBody().close();
+      System.out.println("closed: " + exchange.getRequestURI().toString());
+    }
+
   }
 
   private static String mimeType(File file) {
@@ -251,7 +263,7 @@ public class Server implements HttpHandler {
     extensionToMime.put("coffee", "text/coffeescript");
     extensionToMime.put("conf", "text/plain");
     extensionToMime.put("crl", "application/pkix-crl");
-    extensionToMime.put("css", "text/css");
+    extensionToMime.put("css", "text/css; charset=utf-8");
     extensionToMime.put("csv", "text/csv");
     extensionToMime.put("def", "text/plain");
     extensionToMime.put("doc", "application/msword");
