@@ -1,0 +1,56 @@
+# Standalone reproducer for the chrome-headless-shell jammy x86_64 startup
+# SIGSEGV. No Playwright in the loop — just downloads chrome-headless-shell
+# from Chrome for Testing, launches it in a tight loop with the same flags
+# Playwright uses, and counts SIGSEGV exits.
+#
+# Mirrors test_docker.yml's matrix and `--ipc=host` exactly so the runtime
+# environment is identical to the failing job, modulo the Java/Playwright
+# layer.
+name: Repro CHS jammy SIGSEGV
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: Launches per matrix leg
+        default: '300'
+      parallel:
+        description: Concurrent launches
+        default: '4'
+      chrome_version:
+        description: Chrome for Testing version (e.g. 148.0.7778.96)
+        default: '148.0.7778.96'
+  push:
+    branches:
+      - 'repro/**'
+
+jobs:
+  repro:
+    name: Repro (${{ matrix.flavor }}, ${{ matrix.runs-on }})
+    timeout-minutes: 60
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [jammy, noble]
+        runs-on: [ubuntu-24.04, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build Docker image
+        run: |
+          # Override the FROM line to match the matrix flavor.
+          sed "s|^FROM ubuntu:.*$|FROM ubuntu:${{ matrix.flavor }}|" \
+              tools/chs-repro/Dockerfile > tools/chs-repro/Dockerfile.${{ matrix.flavor }}
+          docker build \
+            --build-arg CHROME_VERSION=${{ inputs.chrome_version || '148.0.7778.96' }} \
+            -t chs-repro:${{ matrix.flavor }} \
+            -f tools/chs-repro/Dockerfile.${{ matrix.flavor }} \
+            tools/chs-repro
+
+      - name: Run repro (--ipc=host, matches test_docker.yml)
+        run: |
+          docker run --rm --ipc=host \
+            -e ITERATIONS=${{ inputs.iterations || '300' }} \
+            -e PARALLEL=${{ inputs.parallel || '4' }} \
+            chs-repro:${{ matrix.flavor }}
