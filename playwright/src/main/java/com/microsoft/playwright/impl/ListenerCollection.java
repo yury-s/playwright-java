@@ -42,7 +42,20 @@ class ListenerCollection <EventType> {
     }
 
     for (Consumer<?> listener: new ArrayList<>(list)) {
-      ((Consumer<T>) listener).accept(param);
+      if (listener instanceof Waitable) {
+        // Internal listener backing a waitFor* call, let its exceptions propagate to that call.
+        ((Consumer<T>) listener).accept(param);
+        continue;
+      }
+      try {
+        ((Consumer<T>) listener).accept(param);
+      } catch (RuntimeException e) {
+        // Events are dispatched synchronously from whatever API call happens to be processing
+        // messages at the moment. An exception thrown by a user listener must not break that
+        // unrelated call, so report it and carry on (the Python client does the same).
+        LoggingSupport.logWithTimestamp("Error occurred in event listener");
+        e.printStackTrace();
+      }
     }
   }
 

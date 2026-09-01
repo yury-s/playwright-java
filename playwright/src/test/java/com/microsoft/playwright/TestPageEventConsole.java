@@ -56,6 +56,18 @@ public class TestPageEventConsole extends TestBase {
   }
 
   @Test
+  void shouldNotBreakUnrelatedCallWhenListenerThrows() {
+    List<String> messages = new ArrayList<>();
+    page.onConsoleMessage(m -> {
+      throw new RuntimeException("Listener error");
+    });
+    page.onConsoleMessage(m -> messages.add(m.text()));
+    Object result = page.evaluate("() => { console.log('hello'); return 42; }");
+    assertEquals(42, result);
+    assertEquals(asList("hello"), messages);
+  }
+
+  @Test
   void shouldWorkForDifferentConsoleAPICalls() {
     List<ConsoleMessage> messages = new ArrayList<>();
     page.onConsoleMessage(msg -> messages.add(msg));
